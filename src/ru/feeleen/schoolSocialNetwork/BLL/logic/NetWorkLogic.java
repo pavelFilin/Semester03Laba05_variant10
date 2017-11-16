@@ -3,12 +3,9 @@ package ru.feeleen.schoolSocialNetwork.BLL.logic;
 import ru.feeleen.schoolSocialNetwork.BLL.abstruct.INetWorkLogic;
 import ru.feeleen.schoolSocialNetwork.DAL.abstruct.INetWorkDAL;
 import ru.feeleen.schoolSocialNetwork.enitities.PersonDTO;
-import ru.feeleen.schoolSocialNetwork.enitities.SchoolDTO;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 public class NetWorkLogic implements INetWorkLogic {
     INetWorkDAL dal;
@@ -27,23 +24,8 @@ public class NetWorkLogic implements INetWorkLogic {
     }
 
     @Override
-    public SchoolDTO getSchool(UUID id) {
-        return dal.getSchool(id);
-    }
-
-    @Override
     public Iterable<PersonDTO> getAllPersons() {
         return dal.getAllPersons();
-    }
-
-    @Override
-    public Iterable<SchoolDTO> getAllSchools() {
-        return dal.getAllSchools();
-    }
-
-    @Override
-    public boolean update(SchoolDTO school) {
-        return dal.update(school);
     }
 
     @Override
@@ -57,61 +39,52 @@ public class NetWorkLogic implements INetWorkLogic {
     }
 
     @Override
-    public boolean deleteSchool(UUID id) {
-        return dal.deleteSchool(id);
-    }
-
-    @Override
     public boolean createPerson(PersonDTO person) {
-        return dal.createPerson(person);
+        return dal.create(person);
     }
 
     @Override
-    public boolean createSchool(SchoolDTO school) {
-        return dal.createSchool(school);
-    }
-
-    @Override
-    public boolean Save() {
+    public boolean Save() throws IOException {
         return dal.Save();
     }
 
     @Override
     public boolean deleteAllPersonsWithoutSchool() {
-        getAllPersons().forEach(personDTO -> {
-            if (personDTO.schools != null && !personDTO.schools.isEmpty())
-                deletePerson(personDTO.id);
-        });
+        Iterable<PersonDTO> personDTOS = dal.getAllPersons();
+        List<PersonDTO> personDTOList = new LinkedList<>();
+        for (PersonDTO item:
+                personDTOS) {
+            if(item.school == null || item.school == ""){
+                dal.deletePerson(item.id);
+            }
+        }
         return true;
     }
 
     @Override
-    public Iterable<PersonDTO> getAllPersonByDateAndSchool(SchoolDTO school, Date date) {
-        List<PersonDTO> personDTOS = new LinkedList<>();
-
-        dal.getAllSchools().forEach(schoolDTO -> {
-            if (schoolDTO == school) {
-                schoolDTO.persons.forEach((personDTO, admissionOrFinishDateDTO) -> {
-                    if (admissionOrFinishDateDTO != null && personDTO != null) {
-                        if (admissionOrFinishDateDTO.dateOfAdmission.getTime() >= date.getTime() && admissionOrFinishDateDTO.dateOfFinish.getTime() <= date.getTime()) {
-                            personDTOS.add(personDTO);
-                        }
-                    }
-                });
+    public Iterable<PersonDTO> getAllPersonByDateAndSchool(PersonDTO school, Calendar calendar) {
+        Iterable<PersonDTO> personDTOS = dal.getAllPersons();
+        List<PersonDTO> personDTOList = new LinkedList<>();
+        for (PersonDTO item:
+             personDTOS) {
+            if(item.school.equals(school)&&calendar.after(item.attendDate)&&calendar.before(item.endDate)){
+                personDTOList.add(item);
             }
-        });
-        return personDTOS;
+        }
+        return personDTOList;
+
     }
 
     @Override
-    public int calculateSchoolRating(SchoolDTO school) {
-        count = 0;
-        dal.getAllSchools().forEach(schoolDTO -> {
-            if (schoolDTO == school) {
-                // int count = 0 ;
-                schoolDTO.persons.forEach((personDTO, admissionOrFinishDateDTO) -> count++);
+    public int calculateSchoolRating(String schoolName) {
+        int rating = 0;
+        Iterable<PersonDTO> personDTOS = dal.getAllPersons();
+        for (PersonDTO item:
+                personDTOS) {
+            if(item.school.equals(schoolName)){
+                rating++;
             }
-        });
-        return count;
+        }
+        return rating;
     }
 }

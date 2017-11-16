@@ -1,98 +1,129 @@
 package ru.feeleen.schoolSocialNetwork.DAL.file;
 
 import ru.feeleen.schoolSocialNetwork.DAL.abstruct.INetWorkDAL;
-import ru.feeleen.schoolSocialNetwork.enitities.AdmissionOrFinishDateDTO;
 import ru.feeleen.schoolSocialNetwork.enitities.PersonDTO;
-import ru.feeleen.schoolSocialNetwork.enitities.SchoolDTO;
 
 import java.io.*;
 import java.util.*;
 
 public class FileDAL implements INetWorkDAL {
-    private static Set<SchoolDTO> schools;
+
     private static Set<PersonDTO> persons;
 
     private static final String PATH = "";
     private static final String NAME_FILE_PERSONS = "persons.txt";
-    private static final String NAME_FILE_SCHOOLS = "schools.txt";
 
-    public FileDAL() {
-        schools = new HashSet<>();
+    public FileDAL() throws IOException {
         persons = new HashSet<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(NAME_FILE_PERSONS))) {
-            String temp;
-            while ((temp = reader.readLine()) != null && temp.length() != 0) {
-                LinkedList<String> schoolString = new LinkedList(Arrays.asList(reader.readLine().split("|")));
-                SchoolDTO schoolDTO = new SchoolDTO();
-                schoolDTO.id = UUID.fromString(schoolString.poll());
-                schoolDTO.name = schoolString.poll();
-                for (int i = 0; i < schoolString.size(); i++) {
-                    String[] tempPerson = schoolString.get(i).split("&");
-                    AdmissionOrFinishDateDTO admissionOrFinishDateDTO = new AdmissionOrFinishDateDTO(Date.parse(tempPerson[1]), Date.parse(tempPerson[2]));
-                    schoolDTO.persons.put(UUID.fromString(tempPerson[0]), Date.parse(tempPerson[1]))
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        persons = getPersonsDataFromFile(PATH + NAME_FILE_PERSONS);
     }
 
+    private HashSet<PersonDTO> getPersonsDataFromFile(String path) throws IOException {
+        HashSet<PersonDTO> personDTOS = new HashSet<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(PATH + NAME_FILE_PERSONS))) {
+            String temp;
+            while ((temp = reader.readLine()) != null && temp.length() != 0) {
+                List<String> schoolString = new LinkedList<>(Arrays.asList(reader.readLine().split("|")));
+                PersonDTO personDTO = new PersonDTO();
+                personDTO.id = UUID.fromString(schoolString.get(0));
+                personDTO.secondName = schoolString.get(1);
+                personDTO.firstName = schoolString.get(2);
+                personDTO.middleName = schoolString.get(3);
+                personDTO.school = schoolString.get(4);
+                personDTO.attendDate = new GregorianCalendar();
+                personDTO.attendDate.set(Calendar.YEAR, Integer.parseInt(schoolString.get(5)));
+                personDTO.endDate = new GregorianCalendar();
+                personDTO.endDate.set(Calendar.YEAR, Integer.parseInt(schoolString.get(6)));
+            }
+        }
+        return personDTOS;
+    }
 
     @Override
     public PersonDTO getPerson(UUID id) {
-        return null;
+        PersonDTO person = null;
+        for (PersonDTO personDTO : persons) {
+            if (personDTO.id == id) {
+                person = personDTO;
+            }
+        }
+
+        if (person == null) {
+            throw new IllegalArgumentException("Incorrect ID");
+        }
+
+        return person;
     }
 
-
-    @Override
-    public SchoolDTO getSchool(UUID id) {
-        return null;
-    }
 
     @Override
     public Iterable<PersonDTO> getAllPersons() {
-        return null;
+        return persons;
     }
 
-    @Override
-    public Iterable<SchoolDTO> getAllSchools() {
-        return null;
-    }
-
-    @Override
-    public boolean update(SchoolDTO school) {
-        return false;
-    }
 
     @Override
     public boolean update(PersonDTO person) {
-        return false;
+        PersonDTO dataPerson = null;
+        for (PersonDTO personDTO : persons) {
+            if (personDTO.id == person.id) {
+                dataPerson = personDTO;
+            }
+        }
+
+        if (dataPerson == null) {
+            throw new IllegalArgumentException("Incorrect ID");
+        }
+
+        dataPerson.id = person.id;
+        dataPerson.firstName= person.firstName;
+        dataPerson.secondName = person.secondName;
+        dataPerson.middleName = person.middleName;
+        dataPerson.attendDate = person.attendDate;
+        dataPerson.school = person.school;
+        dataPerson.endDate = person.endDate;
+        return true;
     }
 
     @Override
     public boolean deletePerson(UUID id) {
-        return false;
+        PersonDTO person = null;
+        for (PersonDTO personDTO : persons) {
+            if (personDTO.id == id) {
+                person = personDTO;
+            }
+        }
+
+        if (person == null) {
+            throw new IllegalArgumentException("Incorrect ID");
+        }
+
+        persons.remove(person);
+        return true;
     }
 
-    @Override
-    public boolean deleteSchool(UUID id) {
-        return false;
-    }
 
     @Override
-    public boolean createPerson(PersonDTO person) {
-        return false;
+    public boolean create(PersonDTO person) {
+        if (person == null) {
+            throw new NullPointerException("Incorrect person");
+        }
+        persons.add(person);
+        return true;
     }
 
-    @Override
-    public boolean createSchool(SchoolDTO school) {
-        return false;
-    }
 
     @Override
-    public boolean Save() {
-        return false;
+    public boolean Save() throws IOException {
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(PATH+NAME_FILE_PERSONS))) {
+            for (PersonDTO person :
+                    persons) {
+                    writer.write(person.id.toString() + "|" + person.secondName + "|" + person.firstName + "|" + person.middleName
+                            + "|" + person.school + "|" + person.attendDate.get(Calendar.YEAR) + "|" + person.endDate.get(Calendar.YEAR));
+                    writer.newLine();
+
+            }
+        };
+        return true;
     }
 }
