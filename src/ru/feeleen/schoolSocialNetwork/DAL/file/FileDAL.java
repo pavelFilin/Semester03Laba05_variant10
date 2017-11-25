@@ -21,19 +21,37 @@ public class FileDAL implements INetWorkDAL {
     private HashSet<PersonDTO> getPersonsDataFromFile(String path) throws IOException {
         HashSet<PersonDTO> personDTOS = new HashSet<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(PATH + NAME_FILE_PERSONS))) {
+            //FileWriter fd = new FileWriter(PATH + NAME_FILE_PERSONS);
+            //fd.close();
+            // try (BufferedReader reader = new BufferedReader(new InputStreamReader(null))) {
             String temp;
             while ((temp = reader.readLine()) != null && temp.length() != 0) {
-                List<String> schoolString = new LinkedList<>(Arrays.asList(reader.readLine().split("|")));
-                PersonDTO personDTO = new PersonDTO();
-                personDTO.id = UUID.fromString(schoolString.get(0));
-                personDTO.secondName = schoolString.get(1);
-                personDTO.firstName = schoolString.get(2);
-                personDTO.middleName = schoolString.get(3);
-                personDTO.school = schoolString.get(4);
-                personDTO.attendDate = new GregorianCalendar();
-                personDTO.attendDate.set(Calendar.YEAR, Integer.parseInt(schoolString.get(5)));
-                personDTO.endDate = new GregorianCalendar();
-                personDTO.endDate.set(Calendar.YEAR, Integer.parseInt(schoolString.get(6)));
+                // List<String> schoolString = new LinkedList<>(Arrays.asList(reader.readLine().split("|")));
+                String[] arr = temp.split("&");
+                if (arr.length == 4) {
+                    List<String> tempListStrings = new LinkedList<>(Arrays.asList(temp.split("&")));
+                    PersonDTO personDTO = new PersonDTO();
+                    personDTO.id = UUID.fromString(tempListStrings.get(0));
+                    personDTO.secondName = tempListStrings.get(1);
+                    personDTO.firstName = tempListStrings.get(2);
+                    personDTO.middleName = tempListStrings.get(3);
+                    personDTOS.add(personDTO);
+                } else if (arr.length == 7) {
+                    List<String> tempListStrings = new LinkedList<>(Arrays.asList(temp.split("&")));
+                    PersonDTO personDTO = new PersonDTO();
+                    personDTO.id = UUID.fromString(tempListStrings.get(0));
+                    personDTO.secondName = tempListStrings.get(1);
+                    personDTO.firstName = tempListStrings.get(2);
+                    personDTO.middleName = tempListStrings.get(3);
+                    personDTO.school = tempListStrings.get(4);
+                    personDTO.attendDate = new GregorianCalendar();
+                    personDTO.attendDate.set(Calendar.YEAR, Integer.parseInt(tempListStrings.get(5)));
+                    personDTO.endDate = new GregorianCalendar();
+                    personDTO.endDate.set(Calendar.YEAR, Integer.parseInt(tempListStrings.get(6)));
+                    personDTOS.add(personDTO);
+                } else {
+                    throw new RuntimeException("Unreadable file");
+                }
             }
         }
         return personDTOS;
@@ -76,7 +94,7 @@ public class FileDAL implements INetWorkDAL {
         }
 
         dataPerson.id = person.id;
-        dataPerson.firstName= person.firstName;
+        dataPerson.firstName = person.firstName;
         dataPerson.secondName = person.secondName;
         dataPerson.middleName = person.middleName;
         dataPerson.attendDate = person.attendDate;
@@ -114,16 +132,26 @@ public class FileDAL implements INetWorkDAL {
 
 
     @Override
-    public boolean Save() throws IOException {
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(PATH+NAME_FILE_PERSONS))) {
-            for (PersonDTO person :
-                    persons) {
-                    writer.write(person.id.toString() + "|" + person.secondName + "|" + person.firstName + "|" + person.middleName
-                            + "|" + person.school + "|" + person.attendDate.get(Calendar.YEAR) + "|" + person.endDate.get(Calendar.YEAR));
-                    writer.newLine();
-
+    public boolean save() throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + NAME_FILE_PERSONS, false))) {
+            try {
+                for (PersonDTO person : persons) {
+                    try {
+                        writer.write(person.id.toString() + "&" + person.secondName + "&" + person.firstName + "&" + person.middleName
+                                + "&" + person.school + "&" + person.attendDate.get(Calendar.YEAR) + "&" + person.endDate.get(Calendar.YEAR));
+                        writer.newLine();
+                    } catch (Exception e) {
+                        writer.write(person.id.toString() + "&" + person.secondName + "&" + person.firstName + "&" + person.middleName
+                                + "&" + "&" + "&");
+                        writer.newLine();
+                    }
+                }
+            } catch(Exception e){
+                System.out.println(e);
+                throw new RuntimeException();
             }
-        };
+        }
         return true;
     }
 }
+

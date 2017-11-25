@@ -1,19 +1,20 @@
 package ru.feeleen.schoolSocialNetwork.enitities;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class PersonVM {
-    public UUID id;
+    private UUID id;
 
     private String firstName;
     private String secondName;
     private String middleName;
 
-    private String school;
-
     private GregorianCalendar attendDate;
     private GregorianCalendar endDate;
+
+    private String school;
 
     public PersonVM(String firstName, String secondName, String middleName) {
         this.firstName = firstName;
@@ -22,10 +23,11 @@ public class PersonVM {
         id = UUID.randomUUID();
     }
 
-    public PersonVM(String firstName, String secondName, String middleName, GregorianCalendar attendDate, GregorianCalendar endDate) {
+    public PersonVM(String firstName, String secondName, String middleName, String school, GregorianCalendar attendDate, GregorianCalendar endDate) {
         this.firstName = firstName;
         this.secondName = secondName;
         this.middleName = middleName;
+        this.school = school;
         this.attendDate = attendDate;
         this.endDate = endDate;
         id = UUID.randomUUID();
@@ -35,8 +37,21 @@ public class PersonVM {
         this.firstName = personDTO.firstName;
         this.secondName = personDTO.secondName;
         this.middleName = personDTO.middleName;
+        this.school = personDTO.school;
         this.attendDate = personDTO.attendDate;
         this.endDate = personDTO.endDate;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
     }
 
     public String getFirstName() {
@@ -87,6 +102,22 @@ public class PersonVM {
         this.middleName = middleName;
     }
 
+    public GregorianCalendar getAttendDate() {
+        return attendDate;
+    }
+
+    public void setAttendDate(GregorianCalendar attendDate) {
+        this.attendDate = attendDate;
+    }
+
+    public GregorianCalendar getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(GregorianCalendar endDate) {
+        this.endDate = endDate;
+    }
+
     public PersonDTO toPersonDTO() {
         PersonDTO result = new PersonDTO();
         result.id = this.id;
@@ -96,6 +127,6 @@ public class PersonVM {
         result.school = this.school;
         result.attendDate = this.attendDate;
         result.endDate = this.endDate;
-        return new PersonDTO();
+        return result;
     }
 }

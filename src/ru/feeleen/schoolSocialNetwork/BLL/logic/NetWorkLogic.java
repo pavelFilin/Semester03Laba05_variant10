@@ -44,8 +44,8 @@ public class NetWorkLogic implements INetWorkLogic {
     }
 
     @Override
-    public boolean Save() throws IOException {
-        return dal.Save();
+    public boolean save() throws IOException {
+        return dal.save();
     }
 
     @Override

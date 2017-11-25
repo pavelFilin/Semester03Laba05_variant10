@@ -19,7 +19,7 @@ public interface INetWorkLogic {
 
     boolean createPerson(PersonDTO person);
 
-    boolean Save() throws IOException;
+    boolean save() throws IOException;
 
     boolean deleteAllPersonsWithoutSchool();
 

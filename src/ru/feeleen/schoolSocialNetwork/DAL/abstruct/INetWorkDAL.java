@@ -16,5 +16,5 @@ public interface INetWorkDAL {
 
     boolean create(PersonDTO person);
 
-    boolean Save() throws IOException;
+    boolean save() throws IOException;
 }
