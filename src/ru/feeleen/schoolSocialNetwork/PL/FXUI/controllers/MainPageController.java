@@ -133,19 +133,23 @@ public class MainPageController implements Initializable {
         Window parentWindow = ((Node) actionEvent.getSource()).getScene().getWindow();
 
         switch (clickedButton.getId()) {
-            case "addPersonButton":
-                addDialogController.setPerson(new PersonVM("text", "text", "text"));
+            case "addPersonButton": {
+                addDialogController.setPerson(new PersonVM("", "", ""));
                 showDialog(parentWindow);
                 allPersons.add(addDialogController.getPerson());
-                break;
+            }
+            break;
 
-            case "btnEdit":
+            case "editButton": {
+                addDialogController.setPerson(selectedPerson);
+                showDialog(parentWindow);
+                allPersons.update(addDialogController.getPerson());
+            }
+            break;
 
-                break;
 
-
-            case "btnDelete":
-
+            case "deleteButton":
+                allPersons.delete(selectedPerson);
                 break;
 
         }
@@ -154,7 +158,7 @@ public class MainPageController implements Initializable {
     private void showDialog(Window parentWindow) {
         if (editDialogStage == null) {
             editDialogStage = new Stage();
-            editDialogStage.setTitle("Редактирование записи");
+            editDialogStage.setTitle("Edit table");
             editDialogStage.setMinHeight(150);
             editDialogStage.setMinWidth(300);
             editDialogStage.setResizable(false);

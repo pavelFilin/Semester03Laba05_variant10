@@ -84,7 +84,7 @@ public class FileDAL implements INetWorkDAL {
     public boolean update(PersonDTO person) {
         PersonDTO dataPerson = null;
         for (PersonDTO personDTO : persons) {
-            if (personDTO.id == person.id) {
+            if (personDTO.id.equals(person.id)) {
                 dataPerson = personDTO;
             }
         }
@@ -107,7 +107,7 @@ public class FileDAL implements INetWorkDAL {
     public boolean deletePerson(UUID id) {
         PersonDTO person = null;
         for (PersonDTO personDTO : persons) {
-            if (personDTO.id == id) {
+            if (personDTO.id.equals(id)) {
                 person = personDTO;
             }
         }

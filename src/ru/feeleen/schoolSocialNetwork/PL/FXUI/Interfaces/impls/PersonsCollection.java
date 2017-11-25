@@ -29,13 +29,33 @@ public class PersonsCollection implements IPersonsCollection {
 
     @Override
     public void update(PersonVM person) {
+        PersonVM datePerson = null;
+
+        for (PersonVM item :
+                personList) {
+            if (item.getId().equals(person.getId())) {
+                datePerson = item;
+            }
+        }
+
+        if (datePerson == null) {
+            throw new NullPointerException();
+        }
+
+        datePerson.setFirstName(person.getFirstName());
+        datePerson.setSecondName(person.getSecondName());
+        datePerson.setMiddleName(person.getMiddleName());
+        datePerson.setAttendDate(person.getAttendDate());
+        datePerson.setSchool(person.getSchool());
+        datePerson.setEndDate(person.getEndDate());
+
         bll.update(person.toPersonDTO());
     }
 
     @Override
     public void delete(PersonVM person) {
-        personList.remove(person);
         bll.deletePerson(person.getId());
+        personList.remove(person);
     }
 
     private Collection<PersonVM> getVMCollection(Collection<PersonDTO> collection) {

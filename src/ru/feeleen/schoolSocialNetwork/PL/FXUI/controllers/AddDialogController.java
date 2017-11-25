@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import ru.feeleen.schoolSocialNetwork.enitities.PersonVM;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -60,7 +61,13 @@ public class AddDialogController {
                 GregorianCalendar TO = new GregorianCalendar();
                 TO.set(Calendar.YEAR, dateEnd);
 
-                person = new PersonVM(fName, sName, mName, school, FROM, TO);
+                //person = new PersonVM(fName, sName, mName, school, FROM, TO);
+                person.setFirstName(fName);
+                person.setMiddleName(mName);
+                person.setSecondName(sName);
+                person.setSchool(school);
+                person.setAttendDate(FROM);
+                person.setEndDate(TO);
 
                 actionClose(actionEvent);
             } else if(!school.isEmpty()){
@@ -101,6 +108,19 @@ public class AddDialogController {
 
     public void setPerson(PersonVM person) {
         this.person = person;
+        txtLastName.setText(person.getSecondName());
+        txtFirstName.setText(person.getFirstName());
+        txtMiddleName.setText(person.getMiddleName());
+        try {
+            txtSchool.setText(person.getSchool());
+            //datePickerAttend.setValue(LOCAL_DATE("2016-05-01"));
+            datePickerAttend.setValue(LocalDate.of(person.getAttendDate().get(Calendar.YEAR), 1,1 ));
+            datePickerEnd.setValue(LocalDate.of(person.getEndDate().get(Calendar.YEAR), 1,1 ));
+            dateAttend = person.getAttendDate().get(Calendar.YEAR);
+            dateEnd = person.getEndDate().get(Calendar.YEAR);
+        } catch (NullPointerException e) {
+
+        }
 
     }
 }

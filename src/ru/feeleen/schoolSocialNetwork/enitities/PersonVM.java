@@ -34,6 +34,7 @@ public class PersonVM {
     }
 
     public PersonVM(PersonDTO personDTO) {
+        this.id = personDTO.id;
         this.firstName = personDTO.firstName;
         this.secondName = personDTO.secondName;
         this.middleName = personDTO.middleName;
