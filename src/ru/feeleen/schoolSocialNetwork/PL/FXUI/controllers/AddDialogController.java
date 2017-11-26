@@ -53,15 +53,19 @@ public class AddDialogController {
         String fName = txtFirstName.getText().trim();
         String sName = txtLastName.getText().trim();
         String mName = txtMiddleName.getText().trim();
-        String school = txtSchool.getText().trim();
+        String school;
+        if (txtSchool.getText() == null) {
+            school = "";
+        } else {
+            school = txtSchool.getText().trim();
+        }
         if (!fName.isEmpty() && !sName.isEmpty() && !mName.isEmpty()) {
-            if (!school.isEmpty() && dateAttend < dateEnd && dateAttend !=0 && dateEnd!=0) {
+            if (!school.isEmpty() && dateAttend < dateEnd && dateAttend != 0 && dateEnd != 0) {
                 GregorianCalendar FROM = new GregorianCalendar();
                 FROM.set(Calendar.YEAR, dateAttend);
                 GregorianCalendar TO = new GregorianCalendar();
                 TO.set(Calendar.YEAR, dateEnd);
 
-                //person = new PersonVM(fName, sName, mName, school, FROM, TO);
                 person.setFirstName(fName);
                 person.setMiddleName(mName);
                 person.setSecondName(sName);
@@ -70,7 +74,7 @@ public class AddDialogController {
                 person.setEndDate(TO);
 
                 actionClose(actionEvent);
-            } else if(!school.isEmpty()){
+            } else if (!school.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("WARNING Dialog");
                 alert.setHeaderText(null);
@@ -114,8 +118,8 @@ public class AddDialogController {
         try {
             txtSchool.setText(person.getSchool());
             //datePickerAttend.setValue(LOCAL_DATE("2016-05-01"));
-            datePickerAttend.setValue(LocalDate.of(person.getAttendDate().get(Calendar.YEAR), 1,1 ));
-            datePickerEnd.setValue(LocalDate.of(person.getEndDate().get(Calendar.YEAR), 1,1 ));
+            datePickerAttend.setValue(LocalDate.of(person.getAttendDate().get(Calendar.YEAR), 1, 1));
+            datePickerEnd.setValue(LocalDate.of(person.getEndDate().get(Calendar.YEAR), 1, 1));
             dateAttend = person.getAttendDate().get(Calendar.YEAR);
             dateEnd = person.getEndDate().get(Calendar.YEAR);
         } catch (NullPointerException e) {

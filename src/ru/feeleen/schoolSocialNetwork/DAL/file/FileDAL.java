@@ -146,12 +146,28 @@ public class FileDAL implements INetWorkDAL {
                         writer.newLine();
                     }
                 }
-            } catch(Exception e){
+            } catch (Exception e) {
                 System.out.println(e);
                 throw new RuntimeException();
             }
         }
         return true;
+    }
+
+    @Override
+    public Map<String, Integer> getSchoolsWithRating() {
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        for (PersonDTO person : persons) {
+            if (person.school != null && !person.school.isEmpty()) {
+                Integer val = result.get(person.school);
+                if(val != null){
+                    result.put(person.school,val + 1);
+                }else{
+                    result.put(person.school,1);
+                }
+            }
+        }
+        return  result;
     }
 }
 

@@ -52,39 +52,49 @@ public class NetWorkLogic implements INetWorkLogic {
     public boolean deleteAllPersonsWithoutSchool() {
         Iterable<PersonDTO> personDTOS = dal.getAllPersons();
         List<PersonDTO> personDTOList = new LinkedList<>();
-        for (PersonDTO item:
-                personDTOS) {
-            if(item.school == null || item.school == ""){
-                dal.deletePerson(item.id);
+        //TODO
+        for (PersonDTO item : personDTOS) {
+            if (item.school == null || item.school == "") {
+                // dal.deletePerson(item.id);
+                personDTOList.add(item);
             }
+        }
+
+        for (PersonDTO item : personDTOList) {
+            dal.deletePerson(item.id);
         }
         return true;
     }
 
     @Override
-    public Iterable<PersonDTO> getAllPersonByDateAndSchool(PersonDTO school, Calendar calendar) {
+    public Iterable<PersonDTO> getAllPersonByDateAndSchool(String school, int year) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.YEAR, year);
         Iterable<PersonDTO> personDTOS = dal.getAllPersons();
         List<PersonDTO> personDTOList = new LinkedList<>();
-        for (PersonDTO item:
-             personDTOS) {
-            if(item.school.equals(school)&&calendar.after(item.attendDate)&&calendar.before(item.endDate)){
+        for (PersonDTO item :
+                personDTOS) {
+            if (item.school != null && item.school.equals(school) && item.attendDate != null && item.endDate != null && calendar.after(item.attendDate) && calendar.before(item.endDate)) {
                 personDTOList.add(item);
             }
         }
         return personDTOList;
-
     }
 
     @Override
-    public int calculateSchoolRating(String schoolName) {
+    public int getCalculateSchoolRating(String schoolName) {
         int rating = 0;
         Iterable<PersonDTO> personDTOS = dal.getAllPersons();
-        for (PersonDTO item:
-                personDTOS) {
-            if(item.school.equals(schoolName)){
+        for (PersonDTO item : personDTOS) {
+            if (item.school.equals(schoolName)) {
                 rating++;
             }
         }
         return rating;
+    }
+
+    @Override
+    public Map<String, Integer> getCalculateSchoolRating() {
+        return dal.getSchoolsWithRating();
     }
 }

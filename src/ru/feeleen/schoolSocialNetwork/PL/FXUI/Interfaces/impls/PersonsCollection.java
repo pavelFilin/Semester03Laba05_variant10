@@ -18,6 +18,10 @@ public class PersonsCollection implements IPersonsCollection {
 
     public PersonsCollection(INetWorkLogic bll) {
         this.bll = bll;
+        refreshCollection();
+    }
+
+    public void refreshCollection() {
         personList = FXCollections.observableArrayList(new LinkedList(getVMCollection((Collection) bll.getAllPersons())));
     }
 
@@ -58,7 +62,7 @@ public class PersonsCollection implements IPersonsCollection {
         personList.remove(person);
     }
 
-    private Collection<PersonVM> getVMCollection(Collection<PersonDTO> collection) {
+    public static  Collection<PersonVM> getVMCollection(Collection<PersonDTO> collection) {
         Collection<PersonVM> result = new ArrayList<>(collection.size());
         for (PersonDTO item : collection) {
             PersonVM temp = new PersonVM(item);

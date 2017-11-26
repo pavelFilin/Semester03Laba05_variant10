@@ -5,6 +5,7 @@ import ru.feeleen.schoolSocialNetwork.enitities.PersonDTO;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 public interface INetWorkLogic {
@@ -23,7 +24,9 @@ public interface INetWorkLogic {
 
     boolean deleteAllPersonsWithoutSchool();
 
-    Iterable<PersonDTO> getAllPersonByDateAndSchool(PersonDTO school, Calendar calendar);
+    Iterable<PersonDTO> getAllPersonByDateAndSchool(String school, int year);
 
-    int calculateSchoolRating(String schoolName);
+    int getCalculateSchoolRating(String schoolName);
+
+    Map<String, Integer> getCalculateSchoolRating();
 }
