@@ -50,6 +50,9 @@ public class AddDialogController {
     }
 
     public void actionSave(ActionEvent actionEvent) {
+        if(person == null) {
+            person = new PersonVM("", "", "");
+        }
         String fName = txtFirstName.getText().trim();
         String sName = txtLastName.getText().trim();
         String mName = txtMiddleName.getText().trim();
@@ -81,7 +84,10 @@ public class AddDialogController {
                 alert.setContentText("Badly school information");
                 alert.showAndWait();
             } else {
-                person = new PersonVM(fName, sName, mName, null, null, null);
+                person.setFirstName(fName);
+                person.setMiddleName(mName);
+                person.setSecondName(sName);
+                //person = new PersonVM(fName, sName, mName, null, null, null);
                 actionClose(actionEvent);
             }
         } else {
@@ -92,7 +98,6 @@ public class AddDialogController {
             alert.showAndWait();
         }
     }
-
 
     public void setDate(ActionEvent actionEvent) {
         DatePicker datePicker = (DatePicker) actionEvent.getSource();
@@ -111,20 +116,20 @@ public class AddDialogController {
     }
 
     public void setPerson(PersonVM person) {
-        this.person = person;
-        txtLastName.setText(person.getSecondName());
-        txtFirstName.setText(person.getFirstName());
-        txtMiddleName.setText(person.getMiddleName());
-        try {
-            txtSchool.setText(person.getSchool());
-            //datePickerAttend.setValue(LOCAL_DATE("2016-05-01"));
-            datePickerAttend.setValue(LocalDate.of(person.getAttendDate().get(Calendar.YEAR), 1, 1));
-            datePickerEnd.setValue(LocalDate.of(person.getEndDate().get(Calendar.YEAR), 1, 1));
-            dateAttend = person.getAttendDate().get(Calendar.YEAR);
-            dateEnd = person.getEndDate().get(Calendar.YEAR);
-        } catch (NullPointerException e) {
+        if(person != null) {
+            this.person = person;
+            txtLastName.setText(person.getSecondName());
+            txtFirstName.setText(person.getFirstName());
+            txtMiddleName.setText(person.getMiddleName());
+            try {
+                txtSchool.setText(person.getSchool());
+                datePickerAttend.setValue(LocalDate.of(person.getAttendDate().get(Calendar.YEAR), 1, 1));
+                datePickerEnd.setValue(LocalDate.of(person.getEndDate().get(Calendar.YEAR), 1, 1));
+                dateAttend = person.getAttendDate().get(Calendar.YEAR);
+                dateEnd = person.getEndDate().get(Calendar.YEAR);
+            } catch (NullPointerException e) {
 
+            }
         }
-
     }
 }

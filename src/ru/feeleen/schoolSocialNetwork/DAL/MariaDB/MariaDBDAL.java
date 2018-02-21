@@ -1,4 +1,4 @@
-package ru.feeleen.schoolSocialNetwork.DAL.file;
+package ru.feeleen.schoolSocialNetwork.DAL.MariaDB;
 
 import ru.feeleen.schoolSocialNetwork.DAL.abstruct.INetWorkDAL;
 import ru.feeleen.schoolSocialNetwork.enitities.PersonDTO;
@@ -58,7 +58,6 @@ public class MariaDBDAL implements INetWorkDAL {
                     }
                 }
             }
-
         } catch (SQLException e) {
             System.out.println("Connection problem.");
             e.printStackTrace();
@@ -70,27 +69,62 @@ public class MariaDBDAL implements INetWorkDAL {
 
     @Override
     public boolean update(PersonDTO person) {
-        return false;
+        String SqlQuery = "UPDATE persons SET firstName = ?, middleName = ?, secondName = ? WHERE uuid = ?";
+        String SqlQuery2 = "UPDATE schools SET name = ? WHERE uuid = ?";
+        String SqlQuery3 = "UPDATE years SET attendDate = ?, endDate = ? WHERE uuid = ?";
+//        String SqlQuery2 = "UPDATE schools SET name = '" + person.school + "', WHERE uuid = '" + person.id + "'";
+//        String SqlQuery3 = "UPDATE years SET attendDate = ?, endDate = ? WHERE uuid = ?";
+        try (Connection connection = DriverManager.getConnection(properties.getProperty("url"), properties)) {
+            try (PreparedStatement st = connection.prepareStatement(SqlQuery)) {
+                st.setString(1, person.firstName);
+                st.setString(2, person.middleName);
+                st.setString(3, person.secondName);
+                st.setString(4, person.id.toString());
+                st.executeQuery();
+            }
+            if (person.school != null && !person.equals("")) {
+                try (PreparedStatement st = connection.prepareStatement(SqlQuery2)) {
+                    st.setString(1, person.school);
+                    st.setString(2, person.id.toString());
+                    st.executeQuery();
+                }
+
+                try (PreparedStatement st = connection.prepareStatement(SqlQuery3)) {
+                    st.setInt(1, person.attendDate.get(Calendar.YEAR));
+                    st.setInt(2, person.endDate.get(Calendar.YEAR));
+                    st.setString(3, person.id.toString());
+                    st.executeQuery();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Connection problem.");
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
     public boolean deletePerson(UUID id) {
-
-        String SqlQuery = "DELETE FROM persons WHERE uuid='" + id + "'";
-        String SqlQuery2 = "DELETE FROM persons WHERE uuid='" + id + "'";
-        String SqlQuery3 = "DELETE FROM persons WHERE uuid='" + id + "'";
+//        String SqlQuery = "DELETE FROM persons WHERE uuid='" + id + "'";
+//        String SqlQuery2 = "DELETE FROM persons WHERE uuid='" + id + "'";
+//        String SqlQuery3 = "DELETE FROM persons WHERE uuid='" + id + "'";
+        String SqlQuery = "DELETE FROM persons WHERE uuid=?";
+        String SqlQuery2 = "DELETE FROM schools WHERE uuid=?";
+        String SqlQuery3 = "DELETE FROM years WHERE uuid=?";
+        //String SqlQueryMain = "DELETE persons.uuid, persons.firstName, persons.middleName, persons.secondName, schools.name, years.attendDate, years.endDate from persons LEFT JOIN schools ON persons.uuid=schools.uuid  LEFT JOIN years ON schools.uuid=years.uuid";
         try (Connection connection = DriverManager.getConnection(properties.getProperty("url"), properties)) {
             try (PreparedStatement st = connection.prepareStatement(SqlQuery)) {
+                st.setString(1, id.toString());
                 st.executeQuery();
             }
             try (PreparedStatement st = connection.prepareStatement(SqlQuery2)) {
+                st.setString(1, id.toString());
                 st.executeQuery();
             }
             try (PreparedStatement st = connection.prepareStatement(SqlQuery3)) {
+                st.setString(1, id.toString());
                 st.executeQuery();
             }
-
-
         } catch (SQLException e) {
             System.out.println("Connection problem.");
             e.printStackTrace();
@@ -101,16 +135,18 @@ public class MariaDBDAL implements INetWorkDAL {
     @Override
     public boolean create(PersonDTO person) {
         String SqlQuery = "INSERT INTO persons VALUES ('" + person.id + "' ,'" + person.firstName + "', '" + person.middleName + "', '" + person.secondName + "')";
-        String SqlQuery2 = "INSERT INTO schools VALUES ('" + person.id + "' ,'" + person.school + "')";
-        String SqlQuery3 = "INSERT INTO years VALUES ('" + person.id + "' ," + person.attendDate.get(Calendar.YEAR) + ", " + person.endDate.get(Calendar.YEAR) + ")";
         try (Connection connection = DriverManager.getConnection(properties.getProperty("url"), properties)) {
             try (PreparedStatement st = connection.prepareStatement(SqlQuery)) {
                 st.executeQuery();
             }
             if (person.school != null && !person.school.isEmpty()) {
+                String SqlQuery2 = "INSERT INTO schools VALUES ('" + person.id + "' ,'" + person.school + "')";
+
                 try (PreparedStatement st = connection.prepareStatement(SqlQuery2)) {
                     st.executeQuery();
                 }
+                String SqlQuery3 = "INSERT INTO years VALUES ('" + person.id + "' ," + person.attendDate.get(Calendar.YEAR) + ", " + person.endDate.get(Calendar.YEAR) + ")";
+
                 try (PreparedStatement st = connection.prepareStatement(SqlQuery3)) {
                     st.executeQuery();
                 }
@@ -124,7 +160,8 @@ public class MariaDBDAL implements INetWorkDAL {
     }
 
     @Override
-    public boolean save() throws IOException {
+    public
+    boolean save() throws IOException {
         return false;
     }
 
@@ -152,7 +189,6 @@ public class MariaDBDAL implements INetWorkDAL {
                 }
             }
 
-
         } catch (SQLException e) {
             System.out.println("Connection problem.");
             e.printStackTrace();
@@ -160,4 +196,9 @@ public class MariaDBDAL implements INetWorkDAL {
 
         return result;
     }
+
+    public void checkExist() {
+
+    }
+
 }

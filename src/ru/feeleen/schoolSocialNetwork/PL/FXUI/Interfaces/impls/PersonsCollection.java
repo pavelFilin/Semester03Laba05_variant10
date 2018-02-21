@@ -35,8 +35,7 @@ public class PersonsCollection implements IPersonsCollection {
     public void update(PersonVM person) {
         PersonVM datePerson = null;
 
-        for (PersonVM item :
-                personList) {
+        for (PersonVM item : personList) {
             if (item.getId().equals(person.getId())) {
                 datePerson = item;
             }

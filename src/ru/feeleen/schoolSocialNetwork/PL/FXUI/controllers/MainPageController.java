@@ -18,8 +18,8 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 import ru.feeleen.schoolSocialNetwork.BLL.abstruct.INetWorkLogic;
 import ru.feeleen.schoolSocialNetwork.BLL.logic.NetWorkLogic;
+import ru.feeleen.schoolSocialNetwork.DAL.MariaDB.MariaDBDAL;
 import ru.feeleen.schoolSocialNetwork.DAL.file.FileDAL;
-import ru.feeleen.schoolSocialNetwork.DAL.file.MariaDBDAL;
 import ru.feeleen.schoolSocialNetwork.PL.FXUI.AlertManager;
 import ru.feeleen.schoolSocialNetwork.PL.FXUI.Interfaces.ISchoolRatingMap;
 import ru.feeleen.schoolSocialNetwork.PL.FXUI.Interfaces.impls.PersonsCollection;
@@ -69,7 +69,7 @@ public class MainPageController implements Initializable {
 
     PersonsCollection personsCollection;
 
-    private Parent fxmlEdit;
+    private Parent fxmlAdd;
     private FXMLLoader fxmlLoader = new FXMLLoader();
     private AddDialogController addDialogController;
     private Stage editDialogStage;
@@ -101,7 +101,7 @@ public class MainPageController implements Initializable {
     private void initializeAddForm() {
         try {
             fxmlLoader.setLocation(getClass().getResource("../fxml/add.fxml"));
-            fxmlEdit = fxmlLoader.load();
+            fxmlAdd = fxmlLoader.load();
             addDialogController = fxmlLoader.getController();
         } catch (IOException e) {
             e.printStackTrace();
@@ -187,11 +187,14 @@ public class MainPageController implements Initializable {
 
         switch (clickedButton.getId()) {
             case "addPersonButton": {
-                addDialogController.setPerson(new PersonVM("", "", ""));
+                addDialogController.setPerson(null);
                 showDialog(parentWindow);
-                personsCollection.add(addDialogController.getPerson());
-                schoolRatingMap.refresh();
-                ratingTable.setItems(schoolRatingMap.getMap());
+                PersonVM personVM = addDialogController.getPerson();
+                if (personVM != null) {
+                    personsCollection.add(personVM);
+                    schoolRatingMap.refresh();
+                    ratingTable.setItems(schoolRatingMap.getMap());
+                }
             }
             break;
 
@@ -200,12 +203,16 @@ public class MainPageController implements Initializable {
                     AlertManager.printBasicWarringAlert("didn't chose any person");
                     return;
                 }
+
                 addDialogController.setPerson(selectedPerson);
                 showDialog(parentWindow);
-                personsCollection.update(addDialogController.getPerson());
-                personsTable.refresh();
-                schoolRatingMap.refresh();
-                ratingTable.setItems(schoolRatingMap.getMap());
+                PersonVM personVM = addDialogController.getPerson();
+                if (personVM != null) {
+                    personsCollection.update(personVM);
+                    personsTable.refresh();
+                    schoolRatingMap.refresh();
+                    ratingTable.setItems(schoolRatingMap.getMap());
+                }
             }
             break;
 
@@ -235,13 +242,12 @@ public class MainPageController implements Initializable {
             editDialogStage.setMinHeight(150);
             editDialogStage.setMinWidth(300);
             editDialogStage.setResizable(false);
-            editDialogStage.setScene(new Scene(fxmlEdit));
+            editDialogStage.setScene(new Scene(fxmlAdd));
             editDialogStage.initModality(Modality.WINDOW_MODAL);
             editDialogStage.initOwner(parentWindow);
         }
 
         editDialogStage.showAndWait();
-
     }
 
     public void actionSelected(ActionEvent actionEvent) {
